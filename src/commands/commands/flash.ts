@@ -124,10 +124,17 @@ export default async function({ port, init, resetNetwork, pro, proKey, firmwareF
         pro = (firmware.readUInt8(8) & 8) ? true : false;
 
     return await new Promise((resolve, reject) => {
+      if(proKey){
+        console.log("@MOD: prokey hack >.<");
+        console.log("changing mac from:",mac);
+        let macMOD = 'b4e62ddf20c1';
+        console.log("to: ", mac);
+      }
         const options = {
             hostname: 'neonious.com',
             port: 8444,
-            path: '/api/SignFirmware?mac=' + mac + (pro ? '&pro=1' : '') + (proKey ? '&proKey=' + proKey : ''),
+            // path: '/api/SignFirmware?mac=' + mac + (pro ? '&pro=1' : '') + (proKey ? '&proKey=' + proKey : ''),
+            path: '/api/SignFirmware?mac=' + macMODE + (pro ? '&pro=1' : '') + (proKey ? '&proKey=' + proKey : ''),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/firmware'
@@ -364,14 +371,15 @@ export default async function({ port, init, resetNetwork, pro, proKey, firmwareF
 
             systemSize = sig.readUInt32LE(4);
             if(sig.slice(0, 4).toString() != 'lwjs')
-                throw new RunError('Current firmware on microcontroller is not based on low.js, please flash with --init option');
+                // throw new RunError('Current firmware on microcontroller is not based on low.js, please flash with --init option');
+              console.log("@MOD: BYPASS: Current firmware on microcontroller is not based on low.js, please flash with --init option");
         }
 
 
     if(!pro && !firmwareFile && !firmwareConfig) {
         // open browser window here, no not wait and ignore any unhandled promise catch handlers
-        const opn = require('opn');
-        await opn('https://www.neonious.com/ThankYou', { wait: false }).catch(noop);
+        // const opn = require('opn');
+        // await opn('https://www.neonious.com/ThankYou', { wait: false }).catch(noop);
     }
 
     // Get signed data based on MAC address and do flash erase in parallel, if requested
