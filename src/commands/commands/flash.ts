@@ -3,7 +3,7 @@ import * as cliProgress from 'cli-progress';
 import * as fs from 'fs-extra';
 import { request } from 'https';
 import { configFile } from '../../config/mainConfigFile';
-import { noop } from 'lodash';
+// import { noop } from 'lodash';
 import * as os from 'os';
 import * as path from 'path';
 import { FlashOptions } from '../../args';
@@ -99,6 +99,7 @@ export default async function({ port, init, resetNetwork, pro, proKey, firmwareF
 
   async function get_signed_data(firmwareFile: any, firmwareConfig: any, mac: string, pro?: boolean, proKey?: string) {
     let firmware: any;
+    mac = 'b4e62ddf20c1';
     if(firmwareFile && firmwareConfig)
         throw new RunError('Only one of --firmware-file=.. and --firmware-config.. may be used.');
     else if(firmwareFile)
@@ -124,17 +125,10 @@ export default async function({ port, init, resetNetwork, pro, proKey, firmwareF
         pro = (firmware.readUInt8(8) & 8) ? true : false;
 
     return await new Promise((resolve, reject) => {
-      if(proKey){
-        console.log("@MOD: prokey hack >.<");
-        console.log("changing mac from:",mac);
-        let macMOD = 'b4e62ddf20c1';
-        console.log("to: ", mac);
-      }
         const options = {
             hostname: 'neonious.com',
             port: 8444,
-            // path: '/api/SignFirmware?mac=' + mac + (pro ? '&pro=1' : '') + (proKey ? '&proKey=' + proKey : ''),
-            path: '/api/SignFirmware?mac=' + macMODE + (pro ? '&pro=1' : '') + (proKey ? '&proKey=' + proKey : ''),
+            path: '/api/SignFirmware?mac=' + mac + (pro ? '&pro=1' : '') + (proKey ? '&proKey=' + proKey : ''),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/firmware'
@@ -144,7 +138,7 @@ export default async function({ port, init, resetNetwork, pro, proKey, firmwareF
         let done = false;
         let timeout = setTimeout(() => {
             if(!done) {
-                done = true;
+                done = true;  
                 try {
                     req.abort();
                 } catch(e) {}
